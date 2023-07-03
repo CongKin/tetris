@@ -22,15 +22,17 @@ import sun.misc.Signal;
 public class Client implements Runnable{
     private String host;
     private int port;
+    private WindowGame window;
     
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private boolean running = false;
     
-    public Client(String host, int port){
+    public Client(String host, int port, WindowGame window){
         this.host = host;
         this.port = port;
+        this.window = window;
     }
     
     //connect to server
@@ -85,6 +87,9 @@ public class Client implements Runnable{
                        SignalPacket signalPacket = (SignalPacket)data;
                         final String message = signalPacket.getMessage();
                          System.out.println("Signal received from server: " + message);
+                         if(message == "Start Game"){
+                             window.startTetris(); 
+                         }
                         
                     } else {
                         System.out.println("Server no response");

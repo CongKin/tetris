@@ -19,6 +19,7 @@ import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.Timer;
@@ -38,6 +39,7 @@ public class Title extends JPanel implements KeyListener{
     private JButton submit;
     private InetAddress ipAddress;
     private Integer port;
+    private JLabel status;
     
     public Title(WindowGame window){
         //instructions = ImageLoader.loadImage("");
@@ -51,6 +53,7 @@ public class Title extends JPanel implements KeyListener{
         timer.start();
         this.window = window;
         
+        status = new JLabel("Haven't connect to server");
         linkInput = new JTextField("");
         submit = new JButton("Connect");
         submit.addActionListener(new ActionListener(){  
@@ -63,12 +66,13 @@ public class Title extends JPanel implements KeyListener{
                     int port = uri.getPort();
                     System.out.println("Host: " + host);
                     System.out.println("Port: " + port);
-                    Client client = new Client(host, port);
+                    Client client = new Client(host, port, window);
                     client.connect();
                     String clientHost = client.getIPAdress().toString();
                     String message = clientHost + " connected to server on port " + port;
                     System.out.println(message);
                     client.sendObject(message);
+                    status.setText("Connected to Server Successfully");
                 }catch(URISyntaxException e1) {
                     e1.printStackTrace();
                 }
@@ -93,22 +97,24 @@ public class Title extends JPanel implements KeyListener{
         g.drawString("Server IP: ", 50, 180);
         linkInput.setBounds(180,150, 300,45);
         this.add(linkInput);
+        
+        status.setBounds(250,370, 300,45);
+        this.add(status);
                 
         submit.setBounds(250,270, 95,30);
         this.add(submit);
         
         
-        g.setColor(Color.white);
-        g.setFont(new Font("TimesRoman", Font.PLAIN, 40));
-        g.drawString("Press Space to Play!", 50, WindowGame.HEIGHT/2+100);
+        
     }
     
     
     @Override
     public void keyTyped(KeyEvent e) {
+        /*
         if(e.getKeyChar() == KeyEvent.VK_SPACE){
             window.startTetris();
-        }
+        }*/
     }
 
     @Override
