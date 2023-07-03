@@ -12,7 +12,7 @@ import javax.swing.JFrame;
  *
  * @author User
  */
-public class WindowGame {
+public class WindowGame{
     
     public static final int WIDTH=650, HEIGHT=660;
     

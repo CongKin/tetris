@@ -13,6 +13,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,8 +34,7 @@ public class Title extends JPanel implements KeyListener{
     private WindowGame window;
     private BufferedImage[] playButton = new BufferedImage[2];
     private Timer timer;
-    private JTextField ipAddressInput;
-    private JTextField portInput;
+    private JTextField linkInput;
     private JButton submit;
     private InetAddress ipAddress;
     private Integer port;
@@ -50,18 +51,28 @@ public class Title extends JPanel implements KeyListener{
         timer.start();
         this.window = window;
         
-        ipAddressInput = new JTextField("");
-        portInput = new JTextField("25000");
+        linkInput = new JTextField("");
         submit = new JButton("Connect");
         submit.addActionListener(new ActionListener(){  
             public void actionPerformed(ActionEvent e){ 
-                port = Integer.parseInt(portInput.getText());
-                String temp = ipAddressInput.getText();
+                
+                String link = linkInput.getText();
                 try {
-                    ipAddress = InetAddress.getByName(temp);
-                } catch (UnknownHostException ex) {
-                    Logger.getLogger(Title.class.getName()).log(Level.SEVERE, null, ex);
+                    URI uri = new URI(link);
+                    String host = uri.getHost();
+                    int port = uri.getPort();
+                    System.out.println("Host: " + host);
+                    System.out.println("Port: " + port);
+                    Client client = new Client(host, port);
+                    client.connect();
+                    String clientHost = client.getIPAdress().toString();
+                    String message = clientHost + " connected to server on port " + port;
+                    System.out.println(message);
+                    client.sendObject(message);
+                }catch(URISyntaxException e1) {
+                    e1.printStackTrace();
                 }
+
             }
         });
         
@@ -80,13 +91,8 @@ public class Title extends JPanel implements KeyListener{
         g.setColor(Color.white);
         g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
         g.drawString("Server IP: ", 50, 180);
-        ipAddressInput.setBounds(180,150, 300,45);
-        this.add(ipAddressInput);
-        
-        g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
-        g.drawString("Port: ", 50, 240);
-        portInput.setBounds(180,210, 300,45);
-        this.add(portInput);
+        linkInput.setBounds(180,150, 300,45);
+        this.add(linkInput);
                 
         submit.setBounds(250,270, 95,30);
         this.add(submit);
