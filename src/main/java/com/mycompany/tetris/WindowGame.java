@@ -32,7 +32,6 @@ public class WindowGame{
         
         window.addKeyListener(title);
         
-        
         window.add(title);
         
         window.setVisible(true);
@@ -45,9 +44,12 @@ public class WindowGame{
         window.addMouseListener(board);
         
         window.addKeyListener(board);
+        System.out.println("starting game");
         window.add(board);
         board.startGame();
         window.revalidate();
+        window.requestFocusInWindow();
+        
     }
     
     public static void main(String[] args){

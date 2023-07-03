@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,6 +41,7 @@ public class Title extends JPanel implements KeyListener{
     private InetAddress ipAddress;
     private Integer port;
     private JLabel status;
+    private Client client;
     
     public Title(WindowGame window){
         //instructions = ImageLoader.loadImage("");
@@ -66,16 +68,19 @@ public class Title extends JPanel implements KeyListener{
                     int port = uri.getPort();
                     System.out.println("Host: " + host);
                     System.out.println("Port: " + port);
-                    Client client = new Client(host, port, window);
+                    client = new Client(host, port, window);
                     client.connect();
                     String clientHost = client.getIPAdress().toString();
                     String message = clientHost + " connected to server on port " + port;
                     System.out.println(message);
                     client.sendObject(message);
                     status.setText("Connected to Server Successfully");
+                    
+                    boolean start = false;
+                    
                 }catch(URISyntaxException e1) {
                     e1.printStackTrace();
-                }
+                } 
 
             }
         });

@@ -38,12 +38,14 @@ public class Client implements Runnable{
     //connect to server
     public void connect(){
         try{
+            
             socket = new Socket(host,port);
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
             //listener = new EventListener();
             new Thread(this).start();
             //createAndShowGUI(); // Create the GUI
+            System.out.println("Connecting");
         }catch(ConnectException e){
             System.out.println("Unable to connect to the server.");
         }catch(IOException e){
@@ -87,8 +89,7 @@ public class Client implements Runnable{
                        SignalPacket signalPacket = (SignalPacket)data;
                         final String message = signalPacket.getMessage();
                          System.out.println("Signal received from server: " + message);
-                         if(message == "Start Game"){
-                             System.out.println("start window game for tetris");
+                         if(message.equals("Start Game") ){
                              window.startTetris(); 
                          }
                         
@@ -116,4 +117,6 @@ public class Client implements Runnable{
         }
         return null;
     }
+    
+    
 }
