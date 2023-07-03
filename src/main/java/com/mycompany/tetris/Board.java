@@ -53,7 +53,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     private LinkedList<Integer> shapeList;
     private int blockPlaced = 0;
     
-    private int holdShape = 0;
+    private int holdShape = -1;
     private Boolean isChanged = false;
     
     public Board(){
@@ -224,7 +224,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         g.setFont(new Font("TimesRoman", Font.PLAIN, 25));
         g.drawString("HOLD", BLOCK_SIZE*BOARD_WIDTH + 60, BLOCK_SIZE*0+22);
         
-        if (holdShape!=0){
+        if (holdShape >= 0){
             for(int row=0; row<shapes[holdShape].getCoords().length; row++){
                 for(int col=0; col<shapes[holdShape].getCoords()[row].length; col++){
                     if(shapes[holdShape].getCoords()[row][col]!=0){
@@ -236,6 +236,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
             }
         }
         
+        // draw next item
         g.setColor(Color.white);
         g.drawLine(BLOCK_SIZE*BOARD_WIDTH + 50, BLOCK_SIZE*6 , BLOCK_SIZE*BOARD_WIDTH +50 + BLOCK_SIZE *6, BLOCK_SIZE*6);
         g.drawLine(BLOCK_SIZE*BOARD_WIDTH + 50, BLOCK_SIZE*7 , BLOCK_SIZE*BOARD_WIDTH +50 + BLOCK_SIZE *6, BLOCK_SIZE*7);
@@ -266,7 +267,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     }
     
     public void holdShape(){
-        if (holdShape == 0){
+        if (holdShape < 0){
             holdShape = currentShape.getNumber();
             setCurrentShape();
         } else{
