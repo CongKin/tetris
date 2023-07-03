@@ -12,6 +12,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import packets.SignalPacket;
+import sun.misc.Signal;
 
 /**
  *
@@ -78,8 +80,15 @@ public class Client implements Runnable{
            while(running){
                try{
                    Object data = in.readObject();
-                   //updateGUI(data);
-                   //listener.received(data);
+                   if (data instanceof SignalPacket){
+                        
+                       SignalPacket signalPacket = (SignalPacket)data;
+                        final String message = signalPacket.getMessage();
+                         System.out.println("Signal received from server: " + message);
+                        
+                    } else {
+                        System.out.println("Server no response");
+                    }
                }catch(ClassNotFoundException e){
                     e.printStackTrace();
                }catch(SocketException e){
