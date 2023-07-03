@@ -12,6 +12,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -28,9 +32,11 @@ public class Title extends JPanel implements KeyListener{
     private WindowGame window;
     private BufferedImage[] playButton = new BufferedImage[2];
     private Timer timer;
-    private JTextField port;
+    private JTextField ipAddressInput;
+    private JTextField portInput;
     private JButton submit;
-    private String link;
+    private InetAddress ipAddress;
+    private Integer port;
     
     public Title(WindowGame window){
         //instructions = ImageLoader.loadImage("");
@@ -44,11 +50,18 @@ public class Title extends JPanel implements KeyListener{
         timer.start();
         this.window = window;
         
-        port = new JTextField("");
+        ipAddressInput = new JTextField("");
+        portInput = new JTextField("25000");
         submit = new JButton("Connect");
         submit.addActionListener(new ActionListener(){  
             public void actionPerformed(ActionEvent e){ 
-                link = port.getText();
+                port = Integer.parseInt(portInput.getText());
+                String temp = ipAddressInput.getText();
+                try {
+                    ipAddress = InetAddress.getByName(temp);
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(Title.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         
@@ -66,12 +79,18 @@ public class Title extends JPanel implements KeyListener{
         
         g.setColor(Color.white);
         g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
-        g.drawString("Server: ", 50, 180);
-        port.setBounds(150,150, 300,45);
-        this.add(port);
+        g.drawString("Server IP: ", 50, 180);
+        ipAddressInput.setBounds(180,150, 300,45);
+        this.add(ipAddressInput);
+        
+        g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
+        g.drawString("Port: ", 50, 240);
+        portInput.setBounds(180,210, 300,45);
+        this.add(portInput);
                 
-        submit.setBounds(250,220, 95,30);
+        submit.setBounds(250,270, 95,30);
         this.add(submit);
+        
         
         g.setColor(Color.white);
         g.setFont(new Font("TimesRoman", Font.PLAIN, 40));
