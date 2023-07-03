@@ -12,7 +12,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.Timer;
 
 /**
@@ -26,18 +28,30 @@ public class Title extends JPanel implements KeyListener{
     private WindowGame window;
     private BufferedImage[] playButton = new BufferedImage[2];
     private Timer timer;
+    private JTextField port;
+    private JButton submit;
+    private String link;
     
     public Title(WindowGame window){
         //instructions = ImageLoader.loadImage("");
         timer = new Timer(1000/60, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                repaint();
+                //repaint();
             }
         });
         
         timer.start();
         this.window = window;
+        
+        port = new JTextField("");
+        submit = new JButton("Connect");
+        submit.addActionListener(new ActionListener(){  
+            public void actionPerformed(ActionEvent e){ 
+                link = port.getText();
+            }
+        });
+        
     }
     
     public void paintComponent(Graphics g){
@@ -49,6 +63,15 @@ public class Title extends JPanel implements KeyListener{
         
         //g.drawImage(instructions, WindowGame.WIDTH/2 - instructions.getWidth()/2,
                 //30 - instructions.getHeight()/2 + 150, null);
+        
+        g.setColor(Color.white);
+        g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
+        g.drawString("Server: ", 50, 180);
+        port.setBounds(150,150, 300,45);
+        this.add(port);
+                
+        submit.setBounds(250,220, 95,30);
+        this.add(submit);
         
         g.setColor(Color.white);
         g.setFont(new Font("TimesRoman", Font.PLAIN, 40));
