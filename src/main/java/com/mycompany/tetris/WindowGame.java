@@ -19,6 +19,7 @@ public class WindowGame{
     private Board board;
     private Title title;
     private JFrame window;
+    private Client client;
     
     public WindowGame(){
         window = new JFrame("Tetris");
@@ -27,7 +28,6 @@ public class WindowGame{
         window.setResizable(false);
         window.setLocationRelativeTo(null);
         
-        board = new Board();
         title = new Title(this);
         
         window.addKeyListener(title);
@@ -38,8 +38,12 @@ public class WindowGame{
     }
     
     public void startTetris(){
+        client = title.getClient();
+        
         window.removeKeyListener(title);
         window.remove(title);
+        
+        board = new Board(client);
         window.addMouseMotionListener(board);
         window.addMouseListener(board);
         
@@ -54,5 +58,9 @@ public class WindowGame{
     
     public static void main(String[] args){
         new WindowGame();
+    }
+    
+    public Client getClient(){
+        return client;
     }
 }

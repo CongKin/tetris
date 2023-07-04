@@ -88,7 +88,7 @@ public class Client implements Runnable{
                         
                        SignalPacket signalPacket = (SignalPacket)data;
                         final String message = signalPacket.getMessage();
-                         System.out.println("Signal received from server: " + message);
+                         //System.out.println("Signal received from server: " + message);
                          if(message.equals("Start Game") ){
                              window.startTetris(); 
                          }

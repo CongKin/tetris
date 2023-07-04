@@ -71,7 +71,7 @@ public class Title extends JPanel implements KeyListener{
                     client = new Client(host, port, window);
                     client.connect();
                     String clientHost = client.getIPAdress().toString();
-                    String message = clientHost + " connected to server on port " + port;
+                    String message = clientHost;
                     System.out.println(message);
                     client.sendObject(message);
                     status.setText("Connected to Server Successfully");
@@ -85,6 +85,10 @@ public class Title extends JPanel implements KeyListener{
             }
         });
         
+    }
+    
+    public Client getClient(){
+        return client;
     }
     
     public void paintComponent(Graphics g){

@@ -21,6 +21,7 @@ import java.util.Random;
 import java.util.Set;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import packets.SignalPacket;
 
 /**
  *
@@ -56,8 +57,11 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     private int holdShape = -1;
     private Boolean isChanged = false;
     
-    public Board(){
+    private Client client;
+    
+    public Board(Client client){
         random = new Random();
+        this.client = client;
         
         shapes[0] = new Shape(new int[][]{
             {1,1,1,1} // I Shape
@@ -151,6 +155,9 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
                 shapeList.add(order[i]);
             }
             blockPlaced=0;
+            
+            SignalPacket nextBlockSignal = new SignalPacket("next block", client.getIPAdress().toString());
+            client.sendObject(nextBlockSignal);
         }
         
         int temp = shapeList.removeFirst();
@@ -160,6 +167,8 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         currentShape.reset();
         isChanged = false;
         checkOverGame();
+        
+        
     }
     
     private void checkOverGame(){
