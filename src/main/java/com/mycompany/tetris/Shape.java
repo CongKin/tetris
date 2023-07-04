@@ -21,6 +21,8 @@ public class Shape {
     private int delayTimeForMovement = normal;
     private long beginTime;
     
+    private int shadowThickness = 3;
+    
     private int deltaX = 0;
     private boolean collision = false;
     
@@ -112,6 +114,7 @@ public class Shape {
     
     private void checkLine(){
         int bottomLine = board.getBoard().length - 1;
+        int rowCleared = 0;
         for (int topLine = board.getBoard().length-1; topLine>0; topLine--){
             int count =0;
             for (int col=0; col < board.getBoard()[0].length; col++){
@@ -122,11 +125,16 @@ public class Shape {
             }
             if (count < board.getBoard()[0].length){
                 bottomLine--;
+            }else{
+                rowCleared++;
             }
+        }
+        if(rowCleared>0){
+            board.clearRow(rowCleared);
         }
     }
     
-    public void placeShape(){
+    public int getDropY(){
         int tempY=y;
         boolean collisionTemp = false;
         while(!collisionTemp){
@@ -147,6 +155,11 @@ public class Shape {
                 collisionTemp = true;
             }
         }
+        return tempY;
+    }
+    
+    public void placeShape(){
+        int tempY=getDropY();
         collision = true;
         y = tempY - 1;
     }
@@ -201,6 +214,21 @@ public class Shape {
                 if(coords[row][col]!=0){
                     g.setColor(color);
                     g.fillRect(col * BLOCK_SIZE + x*BLOCK_SIZE, row*BLOCK_SIZE + y*BLOCK_SIZE,BLOCK_SIZE,BLOCK_SIZE);
+                }
+            }
+        }
+        
+        // draw the shadow
+        int tempY = getDropY()-1;
+        for(int row=0; row<coords.length; row++){
+            for(int col=0; col<coords[0].length; col++){
+                if(coords[row][col]!=0){
+                    g.setColor(Color.lightGray);
+                    g.fillRect((x+col)*BLOCK_SIZE - shadowThickness/2, (row+tempY)*BLOCK_SIZE - shadowThickness/2, BLOCK_SIZE+shadowThickness, shadowThickness);
+                    g.fillRect((x+col)*BLOCK_SIZE - shadowThickness/2, (row+tempY)*BLOCK_SIZE - shadowThickness/2, shadowThickness, BLOCK_SIZE+shadowThickness);
+                    g.fillRect((x+col)*BLOCK_SIZE - shadowThickness/2, (row+tempY+1)*BLOCK_SIZE - shadowThickness/2, BLOCK_SIZE+shadowThickness, shadowThickness);
+                    g.fillRect((x+col+1)*BLOCK_SIZE - shadowThickness/2, (row+tempY)*BLOCK_SIZE - shadowThickness/2, shadowThickness, BLOCK_SIZE+shadowThickness);
+                    
                 }
             }
         }

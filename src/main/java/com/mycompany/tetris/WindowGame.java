@@ -33,8 +33,10 @@ public class WindowGame{
         window.addKeyListener(title);
         
         window.add(title);
-        
+           
         window.setVisible(true);
+        
+        startTetris();
     }
     
     public void startTetris(){
@@ -43,7 +45,7 @@ public class WindowGame{
         window.removeKeyListener(title);
         window.remove(title);
         
-        board = new Board(client);
+        board = new Board(/*client*/);
         window.addMouseMotionListener(board);
         window.addMouseListener(board);
         

@@ -57,11 +57,13 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     private int holdShape = -1;
     private Boolean isChanged = false;
     
-    private Client client;
+    //private Client client;
     
-    public Board(Client client){
+    private LinkedList<newRow> newRowList;
+    
+    public Board(/*Client client*/){
         random = new Random();
-        this.client = client;
+        //this.client = client;
         
         shapes[0] = new Shape(new int[][]{
             {1,1,1,1} // I Shape
@@ -108,6 +110,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         }
         
         shapeList = new LinkedList<Integer>();
+        newRowList = new LinkedList<newRow>();
         
         for(int i=0;i<7;i++){
             shapeList.add(order[i]);
@@ -122,10 +125,37 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
             public void actionPerformed(ActionEvent e) {
                 update();
                 repaint();
+                
+                if(!newRowList.isEmpty()){
+                    if(System.currentTimeMillis() > newRowList.getFirst().getTime()){
+                    addNewRow(newRowList.removeFirst().getRow());
+                }
+                }
+                
             }
             
         });
         looper.start();
+        
+        
+    }
+    
+    public class newRow{
+        private int row;
+        private long time;
+        
+        public newRow(int row, long time){
+            this.row = row;
+            this.time = time;
+        }
+        
+        public int getRow(){
+            return row;
+        }
+        
+        public long getTime(){
+            return time;
+        }
     }
     
     private void update(){
@@ -155,9 +185,9 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
                 shapeList.add(order[i]);
             }
             blockPlaced=0;
-            
+            /*
             SignalPacket nextBlockSignal = new SignalPacket("next block", client.getIPAdress().toString());
-            client.sendObject(nextBlockSignal);
+            client.sendObject(nextBlockSignal);*/
         }
         
         int temp = shapeList.removeFirst();
@@ -203,7 +233,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         }
         
         // draw the board
-        g.setColor(Color.gray);
+        g.setColor(Color.lightGray);
         for(int row=0; row<BOARD_HEIGHT+1; row++)
             g.drawLine(0, BLOCK_SIZE*row, BLOCK_SIZE*BOARD_WIDTH, BLOCK_SIZE*row);
         
@@ -269,6 +299,17 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
             }
         }
         
+        // draw onwaiting new row
+        if(!newRowList.isEmpty()){
+            int count = 0;
+            g.setColor(Color.red);
+            for(newRow temp: newRowList){
+                count += temp.getRow();
+            }
+            g.fillRect(BLOCK_SIZE*BOARD_WIDTH, BLOCK_SIZE*(BOARD_HEIGHT - count), BLOCK_SIZE/2, BLOCK_SIZE*count);
+        }
+        
+        
     }
     
     public Color[][] getBoard(){
@@ -286,7 +327,45 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
             currentShape.reset();
         }
     }
-
+    
+    private void addNewRowQueue(int row){
+        newRow temp = new newRow(row, System.currentTimeMillis() + 2000);
+        newRowList.add(temp);
+    }
+    
+    private void addNewRow(int add){
+        for(int row=0; row<board.length - add; row++){
+            for(int col=0; col<board[0].length;col++){
+                board[row][col] = board[row+add][col];
+            }
+        }
+        int emptyCol = random.nextInt(board[0].length);
+        for(int row = board.length-1; row>board.length-add-1; row--){
+            for(int col=0; col<board[0].length;col++){
+                if(col != emptyCol){
+                    board[row][col] = Color.GRAY;
+                }else{
+                    board[row][col] = null;
+                }
+            }
+        }
+    }
+    
+    public void clearRow(int row){
+        while(!newRowList.isEmpty()){
+            if(newRowList.getFirst().getRow()<=row){
+                row -= newRowList.removeFirst().getRow();
+            }else{
+                 newRowList.getFirst().row -= row;
+                 row = 0;
+                 break;
+            }
+        }
+        if(row >0){
+            // do something
+        }
+    }
+    
     @Override
     public void keyTyped(KeyEvent e) {
         
@@ -336,12 +415,20 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
             }
         }
         
+        if(e.getKeyCode()==KeyEvent.VK_1){
+            addNewRowQueue(1);
+        }else if(e.getKeyCode()==KeyEvent.VK_2){
+            addNewRowQueue(2);
+        }else if(e.getKeyCode()==KeyEvent.VK_3){
+            addNewRowQueue(3);
+        }
+        
         
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if(e.getKeyCode()==KeyEvent.VK_DOWN){
+        if(e.getKeyCode()==KeyEvent.VK_1){
             currentShape.speedDown();
         }
     }
