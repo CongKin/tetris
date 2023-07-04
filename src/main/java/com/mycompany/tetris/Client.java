@@ -33,23 +33,30 @@ public class Client implements Runnable{
         this.host = host;
         this.port = port;
         this.window = window;
+        System.out.println(host + port);
+        System.out.println("client");
     }
     
     //connect to server
     public void connect(){
         try{
-            
+            System.out.println("try connect");
             socket = new Socket(host,port);
+            System.out.println("socket");
             out = new ObjectOutputStream(socket.getOutputStream());
-            in = new ObjectInputStream(socket.getInputStream());
-            //listener = new EventListener();
+            System.out.println("outt");
             new Thread(this).start();
+            
+            System.out.println("in");
+            //listener = new EventListener();
+            
+            System.out.println("connected");
             //createAndShowGUI(); // Create the GUI
             System.out.println("Connecting");
         }catch(ConnectException e){
             System.out.println("Unable to connect to the server.");
         }catch(IOException e){
-            e.printStackTrace();
+            System.out.println("IOException: Unable to connect to the server.");
         }
     }
     
@@ -62,6 +69,7 @@ public class Client implements Runnable{
             in.close();
             out.close();
             socket.close();
+            System.out.println("closed");
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -70,7 +78,13 @@ public class Client implements Runnable{
     //send data to server
     public void sendObject(Object packet){
         try{
+            System.out.println("out");
+            if(out == null){
+                out = new ObjectOutputStream(socket.getOutputStream());
+                new Thread(this).start();
+            }
             out.writeObject(packet);
+            System.out.println("send");
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -83,6 +97,8 @@ public class Client implements Runnable{
            
            while(running){
                try{
+                   in = new ObjectInputStream(socket.getInputStream());
+                   new Thread(this).start();
                    Object data = in.readObject();
                    if (data instanceof SignalPacket){
                         
