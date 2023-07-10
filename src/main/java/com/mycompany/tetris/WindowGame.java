@@ -36,7 +36,7 @@ public class WindowGame{
            
         window.setVisible(true);
         
-        startTetris();
+        //startTetris();
     }
     
     public void startTetris(){
