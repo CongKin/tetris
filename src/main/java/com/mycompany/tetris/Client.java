@@ -63,7 +63,8 @@ public class Client {
             
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-        } finally {
+        } 
+        finally {
             // Close the socket and streams when finished
             close();
         }
@@ -71,48 +72,55 @@ public class Client {
 
     private void readMessages() {
         
-        boolean isWritingObject = false;
         
-        try {
-//            byte[] buffer = new byte[1024];
-//            int bytesRead;
-            input = new NonClosingInputStream(socket.getInputStream());
-            
-            while (!isWritingObject) {
-                // Read the signal from the server using the normal InputStream
-                
-                int signal = input.read();
-                if (signal == 1) {
-                    input.close();
-                    isWritingObject = true;
-                }
-            }
-            objectLock.lock();
+        
+        while(true){
             try {
-                // Initialize the ObjectInputStream after receiving the signal
-                objectInputStream = new NonClosingInputStream(socket.getInputStream());
-                ObjectInputStream objectInput = new ObjectInputStream(objectInputStream);
+    //            byte[] buffer = new byte[1024];
+    //            int bytesRead;
+                boolean isWritingObject = false;
+                input = new NonClosingInputStream(socket.getInputStream());
+                System.out.println("opened");
+                while (!isWritingObject) {
+                    // Read the signal from the server using the normal InputStream
 
-                // Read the object sent by the server
-                Object obj = objectInput.readObject();
-                if (obj instanceof String) {
-                    String message = (String) obj;
-                    System.out.println("Received from server: " + message);
+                    int signal = input.read();
+                    if (signal == 1) {
+                        System.out.println("signal received");
+                        input.close();
+                        isWritingObject = true;
+                    }
                 }
+                objectLock.lock();
+                try {
+                    // Initialize the ObjectInputStream after receiving the signal
+                    objectInputStream = new NonClosingInputStream(socket.getInputStream());
+                    ObjectInputStream objectInput = new ObjectInputStream(objectInputStream);
 
-                // Close the ObjectInputStream when done
-                objectInput.close();
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                objectLock.unlock();
+                    // Read the object sent by the server
+                    Object obj = objectInput.readObject();
+                    if (obj instanceof String) {
+                        String message = (String) obj;
+                        System.out.println("Received from server: " + message);
+                    }
+
+                    // Close the ObjectInputStream when done
+
+                    objectInputStream.close();
+                    objectInput.close();
+                    System.out.println("closed");
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                } finally {
+                    objectLock.unlock();
+                }
+    //            while ((bytesRead = input.read(buffer)) != -1) {
+    //                String message = new String(buffer, 0, bytesRead);
+    //                System.out.println("Received from server: " + message);
+    //            }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-//            while ((bytesRead = input.read(buffer)) != -1) {
-//                String message = new String(buffer, 0, bytesRead);
-//                System.out.println("Received from server: " + message);
-//            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -158,6 +166,7 @@ public class Client {
             if (objectOutput != null) {
                 try {
                     objectOutput.close();
+                    objectOutputStream.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
