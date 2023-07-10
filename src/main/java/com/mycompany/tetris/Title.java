@@ -68,12 +68,12 @@ public class Title extends JPanel implements KeyListener{
                     int port = uri.getPort();
                     System.out.println("Host: " + host);
                     System.out.println("Port: " + port);
-                    client = new Client(host, port, window);
-                    client.connect();
+                    client = new Client(host, port);
+                    client.start();
                     String clientHost = client.getIPAdress().toString();
-                    String message = clientHost;
+                    String message = clientHost + "connected";
                     System.out.println(message);
-                    client.sendObject(message);
+                    client.writeMessages(message);
                     status.setText("Connected to Server Successfully");
                     
                     boolean start = false;

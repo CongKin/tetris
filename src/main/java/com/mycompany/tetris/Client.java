@@ -10,7 +10,9 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -134,7 +136,7 @@ public class Client {
 //        }
 //    }
 
-    private void writeMessages(Object packet) {
+    public void writeMessages(Object packet) {
         System.out.println("write"); 
         ObjectOutputStream objectOutput = null;
         objectLock.lock();
@@ -178,14 +180,25 @@ public class Client {
             e.printStackTrace();
         }
     }
-
-    public static void main(String[] args) {
-        String serverAddress = "192.168.0.147";
-        int serverPort = 12345;
-        
-        Client client = new Client(serverAddress, serverPort);
-        client.start();
+    
+    public InetAddress getIPAdress(){
+        try {
+            InetAddress localhost = InetAddress.getLocalHost();
+            System.out.println("Server IP Address: " + localhost.getHostAddress());
+            return localhost;
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
+
+//    public static void main(String[] args) {
+//        String serverAddress = "192.168.0.147";
+//        int serverPort = 12345;
+//        
+//        Client client = new Client(serverAddress, serverPort);
+//        client.start();
+//    }
 }
 
 /*package com.mycompany.tetris;
