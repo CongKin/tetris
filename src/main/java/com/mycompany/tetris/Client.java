@@ -2,7 +2,193 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+
 package com.mycompany.tetris;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.util.Scanner;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import packets.Message;
+
+public class Client {
+
+    private String serverAddress;
+    private int serverPort;
+    private Socket socket;
+    private InputStream input;
+    private OutputStream output;
+    private OutputStream objectOutputStream;
+    private InputStream objectInputStream;
+    
+    Lock objectLock = new ReentrantLock();
+
+    public Client(String serverAddress, int serverPort) {
+        this.serverAddress = serverAddress;
+        this.serverPort = serverPort;
+    }
+
+    public void start() {
+        try {
+            // Connect to the server
+            socket = new Socket(serverAddress, serverPort);
+//            input = socket.getInputStream();
+//            output = socket.getOutputStream();
+            
+            System.out.println("socket");
+
+            Message message = new Message("John", "Hello, world!");
+
+            // Start separate threads for reading and writing messages
+            
+            Thread writeThread = new Thread(() -> writeMessages(message));
+            Thread readThread = new Thread(this::readMessages);
+
+            
+            writeThread.start();
+            writeThread.join();
+            readThread.start();
+            readThread.join();
+            // Wait for both threads to finish
+            
+            
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            // Close the socket and streams when finished
+            close();
+        }
+    }
+
+    private void readMessages() {
+        
+        boolean isWritingObject = false;
+        
+        try {
+//            byte[] buffer = new byte[1024];
+//            int bytesRead;
+            input = new NonClosingInputStream(socket.getInputStream());
+            
+            while (!isWritingObject) {
+                // Read the signal from the server using the normal InputStream
+                
+                int signal = input.read();
+                if (signal == 1) {
+                    input.close();
+                    isWritingObject = true;
+                }
+            }
+            objectLock.lock();
+            try {
+                // Initialize the ObjectInputStream after receiving the signal
+                objectInputStream = new NonClosingInputStream(socket.getInputStream());
+                ObjectInputStream objectInput = new ObjectInputStream(objectInputStream);
+
+                // Read the object sent by the server
+                Object obj = objectInput.readObject();
+                if (obj instanceof String) {
+                    String message = (String) obj;
+                    System.out.println("Received from server: " + message);
+                }
+
+                // Close the ObjectInputStream when done
+                objectInput.close();
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                objectLock.unlock();
+            }
+//            while ((bytesRead = input.read(buffer)) != -1) {
+//                String message = new String(buffer, 0, bytesRead);
+//                System.out.println("Received from server: " + message);
+//            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+//    private void writeMessages() {
+//        try {
+//            Scanner scanner = new Scanner(System.in);
+//
+//            while (true) {
+//                System.out.print("Enter a message to send to the server (or 'exit' to quit): ");
+//                String message = scanner.nextLine();
+//
+//                if (message.equalsIgnoreCase("exit")) {
+//                    break;
+//                }
+//
+//                output.write(message.getBytes());
+//                output.flush();
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+    private void writeMessages(Object packet) {
+        System.out.println("write"); 
+        ObjectOutputStream objectOutput = null;
+        objectLock.lock();
+        try {
+            // Write the object to the ObjectOutputStream
+            output = new NonClosingOutputStream(socket.getOutputStream());
+            // Write the object to the ObjectOutputStream
+            output.write(1);
+            output.close();
+            objectOutputStream = new NonClosingOutputStream(socket.getOutputStream());
+            objectOutput = new ObjectOutputStream(objectOutputStream);
+            objectOutput.writeObject(packet);
+            objectOutput.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            // Release the lock in a finally block
+            objectLock.unlock();
+            if (objectOutput != null) {
+                try {
+                    objectOutput.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    private void close() {
+        try {
+            if (input != null) {
+                input.close();
+            }
+            if (output != null) {
+                output.close();
+            }
+            if (socket != null) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        String serverAddress = "192.168.0.147";
+        int serverPort = 12345;
+        
+        Client client = new Client(serverAddress, serverPort);
+        client.start();
+    }
+}
+
+/*package com.mycompany.tetris;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,11 +200,12 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import packets.SignalPacket;
 import sun.misc.Signal;
-
+*/
 /**
  *
  * @author Cheh Shu Ze
  */
+/*
 public class Client implements Runnable{
     private String host;
     private int port;
@@ -136,3 +323,4 @@ public class Client implements Runnable{
     
     
 }
+*/
