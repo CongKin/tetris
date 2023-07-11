@@ -30,14 +30,23 @@ public class Client {
     private OutputStream objectOutputStream;
     private InputStream objectInputStream;
     
+    private WindowGame windowGame;
+    private Board board;
+    
+    private ObjectHandler objectHandler;
+    
     Lock objectLock = new ReentrantLock();
 
-    public Client(String serverAddress, int serverPort) {
+    public Client(String serverAddress, int serverPort, WindowGame windowGame, Board board) {
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
+        this.windowGame = windowGame;
+        this.board = board;
     }
 
     public void start() {
+        objectHandler = new ObjectHandler(windowGame, board);
+        
         try {
             // Connect to the server
             socket = new Socket(serverAddress, serverPort);
@@ -50,12 +59,12 @@ public class Client {
 
             // Start separate threads for reading and writing messages
             
-            Thread writeThread = new Thread(() -> writeMessages(message));
+            //Thread writeThread = new Thread(() -> writeMessages(message));
             Thread readThread = new Thread(this::readMessages);
 
             
-            writeThread.start();
-            writeThread.join();
+            //writeThread.start();
+            //writeThread.join();
             readThread.start();
             readThread.join();
             // Wait for both threads to finish
@@ -71,8 +80,6 @@ public class Client {
     }
 
     private void readMessages() {
-        
-        
         
         while(true){
             try {
@@ -99,10 +106,11 @@ public class Client {
 
                     // Read the object sent by the server
                     Object obj = objectInput.readObject();
-                    if (obj instanceof String) {
+                    objectHandler.handleMessage(obj);
+                    /*if (obj instanceof String) {
                         String message = (String) obj;
                         System.out.println("Received from server: " + message);
-                    }
+                    }*/
 
                     // Close the ObjectInputStream when done
 
@@ -150,6 +158,9 @@ public class Client {
         objectLock.lock();
         try {
             // Write the object to the ObjectOutputStream
+            while(socket == null){
+                System.out.println("waiting socket open");
+            }
             output = new NonClosingOutputStream(socket.getOutputStream());
             // Write the object to the ObjectOutputStream
             output.write(1);

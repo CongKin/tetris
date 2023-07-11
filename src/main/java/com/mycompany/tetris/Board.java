@@ -57,13 +57,12 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     private int holdShape = -1;
     private Boolean isChanged = false;
     
-    //private Client client;
+    private Client client;
     
     private LinkedList<newRow> newRowList;
     
-    public Board(/*Client client*/){
+    public Board(){
         random = new Random();
-        //this.client = client;
         
         shapes[0] = new Shape(new int[][]{
             {1,1,1,1} // I Shape
@@ -99,6 +98,9 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
             {1,1,}
         }, this, colors[0],6);
         
+        shapeList = new LinkedList<Integer>();
+        newRowList = new LinkedList<newRow>();
+        /*
         int[] order = {0,1,2,3,4,5,6};
         for(int i=0;i<7;i++){
             int temp1 = random.nextInt(7);
@@ -109,16 +111,14 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
             order[temp2] = temp;
         }
         
-        shapeList = new LinkedList<Integer>();
-        newRowList = new LinkedList<newRow>();
-        
         for(int i=0;i<7;i++){
             shapeList.add(order[i]);
-        }
-        
+        }*/
+        /*
         int temp = shapeList.removeFirst();
         currentShape = new Shape(shapes[temp].getCoords(), this, shapes[temp].getColor(), temp);
         blockPlaced++;
+        */
         
         looper = new Timer(delay, new ActionListener(){
             @Override
@@ -137,7 +137,10 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         });
         looper.start();
         
-        
+    }
+    
+    public void setClient(Client client){
+        this.client = client;
     }
     
     public class newRow{
@@ -165,11 +168,15 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     }
     
     public void startGame(){
+        while(shapeList.isEmpty()){
+            System.out.println("waiting game start");
+        }
         setCurrentShape();
         state = STATE_GAME_PLAY;
     }
     
     public void setCurrentShape(){
+        /*
         if (blockPlaced == 1){
             int[] order = {0,1,2,3,4,5,6};
             for(int i=0;i<7;i++){
@@ -185,15 +192,16 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
                 shapeList.add(order[i]);
             }
             blockPlaced=0;
-            /*
-            SignalPacket nextBlockSignal = new SignalPacket("next block", client.getIPAdress().toString());
-            client.sendObject(nextBlockSignal);*/
+            //SignalPacket nextBlockSignal = new SignalPacket("next block", client.getIPAdress().toString());
+            //client.sendObject(nextBlockSignal);
         }
+        */
+        Thread nextBlockThread = new Thread(()->client.writeMessages("Next Block"));
+        nextBlockThread.start();
         
         int temp = shapeList.removeFirst();
         currentShape = new Shape(shapes[temp].getCoords(), this, shapes[temp].getColor(), temp);
         blockPlaced++;
-        
         currentShape.reset();
         isChanged = false;
         checkOverGame();
@@ -349,6 +357,11 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
                 }
             }
         }
+    }
+    
+    public void addShapeList(LinkedList<Integer> shapeList){
+        
+        this.shapeList.addAll(shapeList);
     }
     
     public void clearRow(int row){

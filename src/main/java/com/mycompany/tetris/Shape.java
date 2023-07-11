@@ -32,6 +32,7 @@ public class Shape {
     
     private int number;
     
+    
     public Shape(int[][] coords, Board board, Color color, int number){
         this.coords = coords;
         this.board = board;
@@ -269,6 +270,7 @@ public class Shape {
     public int getX(){
         return x;
     }
+    
     
 }
 

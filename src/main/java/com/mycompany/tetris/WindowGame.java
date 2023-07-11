@@ -28,7 +28,8 @@ public class WindowGame{
         window.setResizable(false);
         window.setLocationRelativeTo(null);
         
-        title = new Title(this);
+        board = new Board();
+        title = new Title(this, board);
         
         window.addKeyListener(title);
         
@@ -41,11 +42,11 @@ public class WindowGame{
     
     public void startTetris(){
         client = title.getClient();
+        board.setClient(client);
         
         window.removeKeyListener(title);
         window.remove(title);
         
-        board = new Board(/*client*/);
         window.addMouseMotionListener(board);
         window.addMouseListener(board);
         

@@ -34,6 +34,7 @@ public class Title extends JPanel implements KeyListener{
     private static final long serialVersionUID = 1L;
     private BufferedImage instructions;
     private WindowGame window;
+    private Board board;
     private BufferedImage[] playButton = new BufferedImage[2];
     private Timer timer;
     private JTextField linkInput;
@@ -43,7 +44,7 @@ public class Title extends JPanel implements KeyListener{
     private JLabel status;
     private Client client;
     
-    public Title(WindowGame window){
+    public Title(WindowGame window, Board board){
         //instructions = ImageLoader.loadImage("");
         timer = new Timer(1000/60, new ActionListener() {
             @Override
@@ -54,6 +55,7 @@ public class Title extends JPanel implements KeyListener{
         
         timer.start();
         this.window = window;
+        this.board = board;
         
         status = new JLabel("Haven't connect to server");
         linkInput = new JTextField("");
@@ -68,15 +70,16 @@ public class Title extends JPanel implements KeyListener{
                     int port = uri.getPort();
                     System.out.println("Host: " + host);
                     System.out.println("Port: " + port);
-                    client = new Client(host, port);
-                    client.start();
+                    client = new Client(host, port, window, board);
+                    Thread longRuningThread = new Thread(()-> client.start());
+                    longRuningThread.start();
                     String clientHost = client.getIPAdress().toString();
                     String message = clientHost + " connected";
                     System.out.println(message);
                     client.writeMessages(message);
                     status.setText("Connected to Server Successfully");
                     
-                    boolean start = false;
+                    //boolean start = false;
                     
                 }catch(URISyntaxException e1) {
                     e1.printStackTrace();
