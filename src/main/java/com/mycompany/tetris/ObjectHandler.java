@@ -33,6 +33,8 @@ public class ObjectHandler {
             
             if(message.equals("Start Game")){
                 window.startTetris();
+            }else if(message.equals("Win Game")){
+                board.setWinGame();
             }
         }else if(obj instanceof ShapeListPacket){
             System.out.println("Received shape list");
@@ -46,6 +48,7 @@ public class ObjectHandler {
         }else if(obj instanceof Attack){
             Attack row = (Attack) obj;
             board.addNewRowQueue(row.getRow());
+            System.out.println("being attack " + row.getRow() + " rows");
         }
         /*
         if(obj instanceof LinkedList){

@@ -33,9 +33,9 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     public static int STATE_GAME_PLAY=0;
     public static int STATE_GAME_PAUSE=1;
     public static int STATE_GAME_OVER=2;
+    public static int STATE_GAME_WIN=3;
     
     private int state = STATE_GAME_PAUSE;
-    
     
     private static int FPS= 60;
     private static int delay = FPS / 1000;
@@ -218,6 +218,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
                 if(coords[row][col]!=0){
                     if(board[row+currentShape.getY()][col+currentShape.getX()]!=null){
                         state = STATE_GAME_OVER;
+                        client.writeMessages("Game Over");
                     }
                 }
             }
@@ -384,6 +385,10 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         }
     }
     
+    public void setWinGame(){
+        state = STATE_GAME_WIN;
+    }
+    
     @Override
     public void keyTyped(KeyEvent e) {
         
@@ -432,14 +437,14 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
                 isChanged = true;
             }
         }
-        
+        /*
         if(e.getKeyCode()==KeyEvent.VK_1){
             addNewRowQueue(1);
         }else if(e.getKeyCode()==KeyEvent.VK_2){
             addNewRowQueue(2);
         }else if(e.getKeyCode()==KeyEvent.VK_3){
             addNewRowQueue(3);
-        }
+        }*/
         
         
     }
