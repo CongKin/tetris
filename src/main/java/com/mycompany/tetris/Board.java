@@ -409,6 +409,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         }
         
         // clean the board
+        /*
         if(state == STATE_GAME_OVER){
             if(e.getKeyCode()==KeyEvent.VK_SPACE){
                 for(int row=0; row<board.length; row++){
@@ -419,7 +420,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
                 setCurrentShape();
                 state = STATE_GAME_PLAY;
             }
-        }
+        }*/
         
         
         
