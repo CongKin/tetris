@@ -218,7 +218,8 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
                 if(coords[row][col]!=0){
                     if(board[row+currentShape.getY()][col+currentShape.getX()]!=null){
                         state = STATE_GAME_OVER;
-                        client.writeMessages("Game Over");
+                        Thread gameOver = new Thread(()->client.writeMessages("Game Over"));
+                        gameOver.start();
                     }
                 }
             }
@@ -261,6 +262,12 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
             g.setColor(Color.white);
             g.setFont(new Font("TimesRoman", Font.PLAIN, 40));
             g.drawString("GAME PAUSE", 25, 300);
+        }
+        
+        if(state == STATE_GAME_WIN){
+            g.setColor(Color.white);
+            g.setFont(new Font("TimesRoman", Font.PLAIN, 40));
+            g.drawString("YOU WIN", 25, 300);
         }
         
         // draw the hold item
@@ -423,14 +430,14 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         }*/
         
         
-        
+        /*
         if(e.getKeyCode()==KeyEvent.VK_P){
             if(state == STATE_GAME_PLAY){
                 state = STATE_GAME_PAUSE;
             }else if (state == STATE_GAME_PAUSE){
                 state = STATE_GAME_PLAY;
             }
-        }
+        }*/
         
         if(isChanged == false){
             if(e.getKeyCode()==KeyEvent.VK_C){
