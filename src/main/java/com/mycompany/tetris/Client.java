@@ -96,6 +96,12 @@ public class Client {
                         System.out.println("signal received");
                         input.close();
                         isWritingObject = true;
+                    }else if (signal == 0){
+                        System.out.println("Server checking status...");
+                        input.close();
+                        System.out.println("in closed");
+                        sendSignal(0);  
+                        System.out.println("response sent");
                     }
                 }
                 objectLock.lock();
@@ -151,7 +157,16 @@ public class Client {
 //            e.printStackTrace();
 //        }
 //    }
-
+    private void sendSignal(int signal) throws IOException{
+        System.out.println("out");
+        output = new NonClosingOutputStream(socket.getOutputStream());
+            // Write the object to the ObjectOutputStream
+        output.write(signal);
+        System.out.println("signal sent");
+        output.close();
+        System.out.println("out closed");
+    }
+    
     public void writeMessages(Object packet) {
         System.out.println("write"); 
         ObjectOutputStream objectOutput = null;
@@ -184,6 +199,7 @@ public class Client {
             }
         }
     }
+    
     
     private void close() {
         try {

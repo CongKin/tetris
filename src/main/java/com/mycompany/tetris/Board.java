@@ -21,6 +21,7 @@ import java.util.Random;
 import java.util.Set;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import packets.Attack;
 import packets.SignalPacket;
 
 /**
@@ -34,6 +35,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     public static int STATE_GAME_OVER=2;
     
     private int state = STATE_GAME_PAUSE;
+    
     
     private static int FPS= 60;
     private static int delay = FPS / 1000;
@@ -336,7 +338,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         }
     }
     
-    private void addNewRowQueue(int row){
+    public void addNewRowQueue(int row){
         newRow temp = new newRow(row, System.currentTimeMillis() + 2000);
         newRowList.add(temp);
     }
@@ -375,7 +377,10 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
             }
         }
         if(row >0){
-            // do something
+            Attack attackRow = new Attack(row);
+            Thread attack = new Thread(()->client.writeMessages(attackRow));
+            attack.start();
+            System.out.println("attack " + row + " rows");
         }
     }
     

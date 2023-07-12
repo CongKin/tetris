@@ -5,6 +5,7 @@
 package com.mycompany.tetris;
 
 import java.util.LinkedList;
+import packets.Attack;
 import packets.ShapeListPacket;
 
 /**
@@ -42,6 +43,9 @@ public class ObjectHandler {
             }else{
                 System.out.println("Not adding shape list");
             }
+        }else if(obj instanceof Attack){
+            Attack row = (Attack) obj;
+            board.addNewRowQueue(row.getRow());
         }
         /*
         if(obj instanceof LinkedList){
