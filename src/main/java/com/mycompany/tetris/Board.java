@@ -331,12 +331,11 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
             }
             g.fillRect(BLOCK_SIZE*BOARD_WIDTH, BLOCK_SIZE*(BOARD_HEIGHT - count), BLOCK_SIZE/2, BLOCK_SIZE*count);
         }
-        
-        if(boardHandler != null){
-            boardHandler.render(g);
-        }
-        
+        /*
+        Thread thread = new Thread(()->boardHandler.render(g));
+        thread.start();*/
     }
+    
     
     public Color[][] getBoard(){
         return board;

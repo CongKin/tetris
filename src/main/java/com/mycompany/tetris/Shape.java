@@ -108,7 +108,7 @@ public class Shape {
             } else{
                 collision = true;
             }
-            board.sendBoard();
+            /*board.sendBoard();*/
             beginTime=System.currentTimeMillis();
         }
     }

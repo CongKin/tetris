@@ -14,7 +14,7 @@ import javax.swing.JFrame;
  */
 public class WindowGame{
     
-    public static final int WIDTH=1000, HEIGHT=660;
+    public static final int WIDTH=650, HEIGHT=660;
     
     private Board board;
     private Title title;
