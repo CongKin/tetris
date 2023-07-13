@@ -16,12 +16,14 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import packets.Attack;
+import packets.BoardPacket;
 import packets.SignalPacket;
 
 /**
@@ -62,6 +64,8 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     private Client client;
     
     private LinkedList<newRow> newRowList;
+    
+    private BoardHandler boardHandler;
     
     public Board(){
         random = new Random();
@@ -130,9 +134,10 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
                 
                 if(!newRowList.isEmpty()){
                     if(System.currentTimeMillis() > newRowList.getFirst().getTime()){
-                    addNewRow(newRowList.removeFirst().getRow());
+                        addNewRow(newRowList.removeFirst().getRow());
+                    }
                 }
-                }
+                
                 
             }
             
@@ -327,6 +332,9 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
             g.fillRect(BLOCK_SIZE*BOARD_WIDTH, BLOCK_SIZE*(BOARD_HEIGHT - count), BLOCK_SIZE/2, BLOCK_SIZE*count);
         }
         
+        if(boardHandler != null){
+            boardHandler.render(g);
+        }
         
     }
     
@@ -392,8 +400,18 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         }
     }
     
+    public void sendBoard(){
+        BoardPacket boardPacket = new BoardPacket(board, currentShape.getCoords(), currentShape.getColor(), currentShape.getX(), currentShape.getY());
+        Thread send = new Thread(()->client.writeMessages(boardPacket));
+        send.start();
+    }
+    
     public void setWinGame(){
         state = STATE_GAME_WIN;
+    }
+    
+    public void setBoardHandler(BoardHandler boardHandler){
+        this.boardHandler = boardHandler;
     }
     
     @Override

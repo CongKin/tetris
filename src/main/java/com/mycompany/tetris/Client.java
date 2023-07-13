@@ -45,7 +45,7 @@ public class Client {
     }
 
     public void start() {
-        objectHandler = new ObjectHandler(windowGame, board);
+        objectHandler = new ObjectHandler(windowGame, board, this);
         
         try {
             // Connect to the server
